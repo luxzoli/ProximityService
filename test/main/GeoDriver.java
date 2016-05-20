@@ -1,7 +1,9 @@
 package main;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import geo.dkdtree.GeoDKDTree;
+import geo.dkdtree.GeoDKDTreeUtils;
+import geo.kdtree.GeoPoint;
+
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -10,28 +12,17 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
-import geo.dkdtree.GeoDKDTree;
-import geo.dkdtree.GeoDKDTreeUtils;
-import geo.kdtree.GeoPoint;
-
-import scala.Tuple2;
-
 public class GeoDriver {
 
 	public static void main(String[] args) {
-		//Logger.getLogger("org").setLevel(Level.OFF);
-		//Logger.getLogger("akka").setLevel(Level.OFF);
-		//long bTime = System.currentTimeMillis();
-		SparkConf sparkConf = new SparkConf()//.setMaster("local[*]")
+		SparkConf sparkConf = new SparkConf().setMaster("local[4]")
 				.setAppName("SparkStreamingKDTree")
-				//.set("spark.eventLog.enabled", "false")
 				.set("spark.streaming.backpressure.enabled", "true");
 		String inPath = args[0];
-		String outPath = args[1];
-		float epsilon = Float.parseFloat(args[2]);
-		int k = Integer.parseInt(args[3]);
-		int sampleSize = Integer.parseInt(args[4]);
-		int numPartitions = Integer.parseInt(args[5]);
+		float epsilon = Float.parseFloat(args[1]);
+		int k = Integer.parseInt(args[2]);
+		int sampleSize = Integer.parseInt(args[3]);
+		int numPartitions = Integer.parseInt(args[4]);
 		JavaSparkContext sc = new JavaSparkContext(sparkConf);
 		JavaStreamingContext ssc = new JavaStreamingContext(sc,
 				Durations.milliseconds(10000));
@@ -44,7 +35,6 @@ public class GeoDriver {
 		GeoDKDTree dtree = new GeoDKDTree(points, sampleSize, numPartitions, epsilon);
 		JavaDStream<GeoPoint> pointsStream = GeoDKDTreeUtils.pointFromStringStream(inputStream);
 
-		//TODO: filtering GeoPoints?
 		JavaPairDStream<Integer, GeoPoint> tKNNDStream = dtree
 				.streamEpsilonNeighborhoodKNNQuery(pointsStream, k, epsilon);
 		JavaDStream<GeoPoint> knnDStream = GeoDKDTreeUtils.undoPair(tKNNDStream);

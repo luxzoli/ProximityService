@@ -20,10 +20,15 @@ import scala.Tuple2;
 import dkdtree.BoundaryObject;
 
 public class DKDTree implements Serializable {
+	
+	private static final long serialVersionUID = 8514717750855024410L;
 	private KDTreeTop top;
 	private JavaPairRDD<Integer, KDTree> subTrees;
+	@SuppressWarnings("unused")
 	private float epsilon;
+	@SuppressWarnings("unused")
 	private int sampleSize;
+	@SuppressWarnings("unused")
 	private int numPartitions;
 	private DistributePoints distributeF;
 	private DKDTreePartitioner partitioner;
@@ -68,6 +73,7 @@ public class DKDTree implements Serializable {
 		return eKNNs;
 	}
 
+	@SuppressWarnings("serial")
 	private static JavaDStream<Point> undoPairStream(
 			JavaPairDStream<Integer, Point> tKNNDStream) {
 		Function<Tuple2<Integer, Point>, Point> f = new Function<Tuple2<Integer, Point>, Point>() {
@@ -82,6 +88,7 @@ public class DKDTree implements Serializable {
 		return knnDStream;
 	}
 
+	@SuppressWarnings("serial")
 	private static JavaRDD<Point> undoPair(JavaPairRDD<Integer, Point> pairs) {
 		Function<Tuple2<Integer, Point>, Point> f = new Function<Tuple2<Integer, Point>, Point>() {
 
@@ -131,13 +138,13 @@ public class DKDTree implements Serializable {
 	}
 
 	private JavaPairRDD<Integer, Point> changeToPair(JavaRDD<Point> points) {
+		@SuppressWarnings("serial")
 		JavaPairRDD<Integer, Point> pointsPairs = points
 				.mapToPair(new PairFunction<Point, Integer, Point>() {
 
 					@Override
 					public Tuple2<Integer, Point> call(Point arg0)
 							throws Exception {
-						// System.out.println(arg0);
 						return new Tuple2<Integer, Point>(0, arg0);
 					}
 
@@ -163,11 +170,13 @@ public class DKDTree implements Serializable {
 
 	public BoundaryObject calculateBoundaries(
 			JavaPairRDD<Integer, Point> pointsPairs) {
+		@SuppressWarnings("serial")
 		Function<Point, BoundaryObject> createAcc = new Function<Point, BoundaryObject>() {
 			public BoundaryObject call(Point p) {
 				return new BoundaryObject(new Point(p), new Point(p));
 			}
 		};
+		@SuppressWarnings("serial")
 		Function2<BoundaryObject, Point, BoundaryObject> addAndCount = new Function2<BoundaryObject, Point, BoundaryObject>() {
 			public BoundaryObject call(BoundaryObject a, Point x) {
 				float[] minA = a.getMin().getP();
@@ -181,6 +190,7 @@ public class DKDTree implements Serializable {
 				return a;
 			}
 		};
+		@SuppressWarnings("serial")
 		Function2<BoundaryObject, BoundaryObject, BoundaryObject> combine = new Function2<BoundaryObject, BoundaryObject, BoundaryObject>() {
 			public BoundaryObject call(BoundaryObject a, BoundaryObject b) {
 				float[] minA = a.getMin().getP();
@@ -202,7 +212,6 @@ public class DKDTree implements Serializable {
 		return boundary;
 	}
 
-	//TODO: kell-e count???
 	private JavaPairRDD<Integer, KDTree> createSubTrees(
 			JavaPairRDD<Integer, Point> pointsPairs) {
 		JavaPairRDD<Integer, Point> partitionedPoints = pointsPairs
@@ -210,6 +219,7 @@ public class DKDTree implements Serializable {
 
 		JavaPairRDD<Integer, Iterable<Point>> partitions = partitionedPoints
 				.partitionBy(partitioner).groupByKey();
+		@SuppressWarnings("serial")
 		PairFunction<Tuple2<Integer, Iterable<Point>>, Integer, KDTree> createSubTrees = new PairFunction<Tuple2<Integer, Iterable<Point>>, Integer, KDTree>() {
 
 			@Override
@@ -324,6 +334,7 @@ public class DKDTree implements Serializable {
 
 	private JavaPairDStream<Integer, Point> changeToPairStream(
 			JavaDStream<Point> points) {
+		@SuppressWarnings("serial")
 		JavaPairDStream<Integer, Point> pointsStream = points
 				.mapToPair(new PairFunction<Point, Integer, Point>() {
 
@@ -337,6 +348,7 @@ public class DKDTree implements Serializable {
 		return pointsStream;
 	}
 
+	@SuppressWarnings("serial")
 	Function<JavaPairRDD<Integer, Point>, JavaPairRDD<Integer, Tuple2<Iterable<Point>, Iterable<KDTree>>>> transformFunc = new Function<JavaPairRDD<Integer, Point>, JavaPairRDD<Integer, Tuple2<Iterable<Point>, Iterable<KDTree>>>>() {
 
 		@Override
@@ -346,6 +358,7 @@ public class DKDTree implements Serializable {
 		}
 
 	};
+	@SuppressWarnings("serial")
 	Function<Tuple2<Iterable<Point>, Iterable<KDTree>>, Tuple2<Iterable<Point>, KDTree>> collectOnly = new Function<Tuple2<Iterable<Point>, Iterable<KDTree>>, Tuple2<Iterable<Point>, KDTree>>() {
 
 		@Override
@@ -359,6 +372,7 @@ public class DKDTree implements Serializable {
 
 	};
 
+	@SuppressWarnings("serial")
 	Function<Tuple2<Integer, Point>, Boolean> filterNotReady = new Function<Tuple2<Integer, Point>, Boolean>() {
 
 		@Override
@@ -367,6 +381,7 @@ public class DKDTree implements Serializable {
 		}
 
 	};
+	@SuppressWarnings("serial")
 	PairFunction<Tuple2<Integer, Point>, Long, Point> IDF = new PairFunction<Tuple2<Integer, Point>, Long, Point>() {
 		@Override
 		public Tuple2<Long, Point> call(Tuple2<Integer, Point> arg0)
@@ -376,6 +391,7 @@ public class DKDTree implements Serializable {
 		}
 	};
 
+	@SuppressWarnings("serial")
 	Function<Tuple2<Integer, Point>, Boolean> filterReady = new Function<Tuple2<Integer, Point>, Boolean>() {
 
 		@Override
