@@ -34,7 +34,6 @@ public class EpsilonNeighborhoodKNN
 		GeoKDTree tree = arg0._2._2;
 		ArrayList<GeoPoint> neighbors = new ArrayList<GeoPoint>();
 		ArrayList<Tuple2<Integer, GeoPoint>> results = new ArrayList<Tuple2<Integer, GeoPoint>>();
-		System.out.println("here starts the search with a list of " + pointsAL.size() + " elements");
 		for (GeoPoint point : pointsAL) {
 			float kDistance = GeoKDTree.epsilonNeighborhoodKNNQuery(tree, point,
 					k, epsilon, neighbors);
@@ -50,7 +49,6 @@ public class EpsilonNeighborhoodKNN
 			results.add(new Tuple2<Integer, GeoPoint>(new Integer(arg0._1), point));
 			neighbors.clear();
 		}
-		System.out.println("here ends the search with a list of " + pointsAL.size() + " elements");
 		return results;
 	}
 

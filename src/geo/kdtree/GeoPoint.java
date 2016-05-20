@@ -47,7 +47,7 @@ public class GeoPoint implements Serializable {
 
 	}
 
-	public GeoPoint(String p) {
+	public GeoPoint(String p, boolean mark) {
 		if (p.endsWith("r")) {
 			p = p.substring(0, p.length() - 2);
 			StringTokenizer st = new StringTokenizer(p, " ");
@@ -84,7 +84,7 @@ public class GeoPoint implements Serializable {
 
 	}
 
-	public GeoPoint(String p, String delim, boolean mark) {
+	public GeoPoint(String p, String delim) {
 		StringTokenizer st = new StringTokenizer(p, delim);
 		this.ID = Long.parseLong(st.nextToken(delim));
 		String s = st.nextToken();
@@ -93,7 +93,7 @@ public class GeoPoint implements Serializable {
 		this.setLon(Float.parseFloat(s));
 	}
 
-	public GeoPoint(String p, boolean mark) {
+	public GeoPoint(String p) {
 		StringTokenizer st = new StringTokenizer(p, " ");
 		this.ID = Long.parseLong(st.nextToken());
 		String s = st.nextToken();
@@ -102,7 +102,7 @@ public class GeoPoint implements Serializable {
 		this.setLon(Float.parseFloat(s));
 	}
 
-	public GeoPoint(String p, String delim) {
+	public GeoPoint(String p, String delim, boolean mark) {
 		if (p.endsWith("r")) {
 			p = p.substring(0, p.length() - 2);
 			StringTokenizer st = new StringTokenizer(p, delim);

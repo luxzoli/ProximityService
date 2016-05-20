@@ -28,26 +28,27 @@ public class StreamingDriver {
 	public static void main(String[] args) {
 		// Logger.getLogger("org").setLevel(Level.OFF);
 		// Logger.getLogger("akka").setLevel(Level.OFF);
-		SparkConf sparkConf = new SparkConf()// .setMaster("local[4]")
+		SparkConf sparkConf = new SparkConf().setMaster("local[4]")
 				.setAppName("SparkStreamingKDTree")
 				// .set("spark.eventLog.enabled", "false")
 				// .set("spark.streaming.backpressure.enabled", "true")
 		;
-		String host = args[0];
-		String inPath = args[1];
+		
+		String inPath = args[0];
+		String host = args[1];
 		int k = Integer.parseInt(args[2]);
 		int sampleSize = Integer.parseInt(args[3]);
 		int numPartitions = Integer.parseInt(args[4]);
 		JavaSparkContext sc = new JavaSparkContext(sparkConf);
-		JavaStreamingContext ssc = new JavaStreamingContext(sc, Durations.milliseconds(15000));
-		JavaDStream<String> inputStream = ssc.socketTextStream(host, 13000).persist(StorageLevel.MEMORY_ONLY());
+		JavaStreamingContext ssc = new JavaStreamingContext(sc, Durations.milliseconds(6000));
+		JavaDStream<String> inputStream = ssc.socketTextStream(host, 13000);
 
 		JavaRDD<String> pointStrings = sc.textFile(inPath);
 		JavaRDD<Point> points = DKDtreeUtils.pointFromString(pointStrings);
 
 		//This version should be used, it is much faster
 		JavaDStream<Point> pointsStream = DKDtreeUtils.pointFromStringStream(inputStream).persist(StorageLevel.MEMORY_ONLY());
-		JavaDStream<Point> ekNNDStream = DKDTree.streamEpsilonNeighborhoodKNNQuery(pointsStream, points, k, 0.05f,
+		JavaDStream<Point> ekNNDStream = DKDTree.streamEpsilonNeighborhoodKNNQuery(pointsStream, points, k, 0.015f,
 				numPartitions, sampleSize);
 		
 		ekNNDStream.count().print();
