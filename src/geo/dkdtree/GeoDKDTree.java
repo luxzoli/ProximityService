@@ -24,8 +24,11 @@ public class GeoDKDTree implements Serializable {
 	private static final long serialVersionUID = 7621961808913115021L;
 	private GeoKDTreeTop top;
 	private JavaPairRDD<Integer, GeoKDTree> subTrees;
+	@SuppressWarnings("unused")
 	private float epsilon;
+	@SuppressWarnings("unused")
 	private int sampleSize;
+	@SuppressWarnings("unused")
 	private int numPartitions;
 	private DistributePoints distributeF;
 	private GeoDKDTreePartitioner partitioner;
@@ -70,6 +73,7 @@ public class GeoDKDTree implements Serializable {
 		return eKNNs;
 	}
 
+	@SuppressWarnings("serial")
 	private static JavaDStream<GeoPoint> undoPairStream(
 			JavaPairDStream<Integer, GeoPoint> tKNNDStream) {
 		Function<Tuple2<Integer, GeoPoint>, GeoPoint> f = new Function<Tuple2<Integer, GeoPoint>, GeoPoint>() {

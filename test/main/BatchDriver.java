@@ -1,26 +1,21 @@
 package main;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import kdtree.Point;
+
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-
 import dkdtree.DKDTree;
 import dkdtree.DKDtreeUtils;
-import kdtree.Point;
 
 public class BatchDriver {
 
 
 	public static void main(String[] args) {
-		// Logger.getLogger("org").setLevel(Level.OFF);
-		// Logger.getLogger("akka").setLevel(Level.OFF);
-		SparkConf sparkConf = new SparkConf()// .setMaster("local[4]")
+		SparkConf sparkConf = new SparkConf().setMaster("local[4]")
 				.setAppName("SparkStreamingKDTree")
-				// .set("spark.eventLog.enabled", "false")
-				// .set("spark.streaming.backpressure.enabled", "true")
+				.set("spark.streaming.backpressure.enabled", "true")
 		;
 		String inPath = args[0];
 		float epsilon = Float.parseFloat(args[1]);

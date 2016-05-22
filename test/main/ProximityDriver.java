@@ -14,12 +14,8 @@ import proximity.ProximityUtils;
 
 public class ProximityDriver {
 	public static void main(String[] args) {
-		//Logger.getLogger("org").setLevel(Level.OFF);
-		//Logger.getLogger("akka").setLevel(Level.OFF);
-		//long bTime = System.currentTimeMillis();
 		SparkConf sparkConf = new SparkConf().setMaster("local[4]")
 				.setAppName("SparkStreamingKDTree")
-				//.set("spark.eventLog.enabled", "false")
 				.set("spark.streaming.backpressure.enabled", "true");
 		String inPath = args[0];
 		float epsilon = Float.parseFloat(args[1]);
@@ -42,6 +38,7 @@ public class ProximityDriver {
 		knnDStream.count().print();
 		ssc.start();
 		ssc.awaitTerminationOrTimeout(120000);
+		ssc.close();
 		ssc.stop();
 		sc.stop();
 
