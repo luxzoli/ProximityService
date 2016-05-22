@@ -26,7 +26,6 @@ public class KNN2FlatMap implements
 			ArrayList<GeoKDTreeTop> matching = grid.getMatchingGrids(p,
 					p.getkDistance());
 			for (GeoKDTreeTop m : matching) {
-				// lehet fölösleges
 				p.setCellID(arg0._1);
 				results.add(new Tuple2<Integer, GeoPoint>(m.getID(), p));
 			}

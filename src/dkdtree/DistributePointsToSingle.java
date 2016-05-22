@@ -12,9 +12,6 @@ import scala.Tuple2;
 public class DistributePointsToSingle implements
 		PairFlatMapFunction<Tuple2<Integer, Point>, Integer, Point> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6566425207653423334L;
 	private KDTreeTop grid;
 	private float epsilon;

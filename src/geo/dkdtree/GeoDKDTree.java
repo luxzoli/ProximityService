@@ -230,7 +230,6 @@ public class GeoDKDTree implements Serializable {
 		return boundary;
 	}
 
-	// TODO: kell-e count???
 	private JavaPairRDD<Integer, GeoKDTree> createSubTrees(
 			JavaPairRDD<Integer, GeoPoint> pointsPairs) {
 		JavaPairRDD<Integer, GeoPoint> partitionedPoints = pointsPairs
@@ -384,7 +383,6 @@ public class GeoDKDTree implements Serializable {
 		public Tuple2<Iterable<GeoPoint>, GeoKDTree> call(
 				Tuple2<Iterable<GeoPoint>, Iterable<GeoKDTree>> arg0)
 				throws Exception {
-			// TODO Auto-generated method stub
 			return new Tuple2<Iterable<GeoPoint>, GeoKDTree>(arg0._1, arg0._2
 					.iterator().next());
 		}

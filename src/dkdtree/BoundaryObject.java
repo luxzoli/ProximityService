@@ -5,9 +5,7 @@ import java.io.Serializable;
 import kdtree.Point;
 
 public class BoundaryObject implements Serializable{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 3769813104862257874L;
 	private Point min;
 	private Point max;

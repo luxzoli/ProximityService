@@ -24,7 +24,7 @@ public class ProximityDriver {
 		int numPartitions = Integer.parseInt(args[4]);
 		JavaSparkContext sc = new JavaSparkContext(sparkConf);
 		JavaStreamingContext ssc = new JavaStreamingContext(sc,
-				Durations.milliseconds(5000));
+				Durations.milliseconds(6000));
 		JavaDStream<String> inputStream = ssc.socketTextStream("localhost",
 				13000);
 		JavaRDD<String> pointStrings = sc.textFile(inPath);

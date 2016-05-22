@@ -365,7 +365,6 @@ public class DKDTree implements Serializable {
 		public Tuple2<Iterable<Point>, KDTree> call(
 				Tuple2<Iterable<Point>, Iterable<KDTree>> arg0)
 				throws Exception {
-			// TODO Auto-generated method stub
 			return new Tuple2<Iterable<Point>, KDTree>(arg0._1, arg0._2
 					.iterator().next());
 		}
