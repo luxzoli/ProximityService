@@ -82,24 +82,41 @@ public class ProximityUtils {
 			JavaRDD<GeoPoint> inputStream) {
 		return inputStream.filter(filterGeoCoordinates);
 	}
-
-	public static void saveResLocal(String outPath, List<String> lines) {
+	
+	public static void saveResLocal(String outPath, List<GeoPoint> points) {
 		File f = new File(outPath, "out.txt");
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
-			for (String line : lines) {
-				bw.write(line + "\n");
+			for (GeoPoint p : points) {
+				p.setReady(false);
+				bw.write(p.toString() + "\n");
+				p.setReady(true);
 			}
 			bw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public static void saveKNNRes(JavaDStream<GeoPoint> knnDStream) {
+		@SuppressWarnings("serial")
+		Function<JavaRDD<GeoPoint>, Void> saveResFunc = new Function<JavaRDD<GeoPoint>, Void>(){
+
+			@Override
+			public Void call(JavaRDD<GeoPoint> v1) throws Exception {
+				ProximityUtils.saveResLocal("res.txt", v1.collect());
+				return null;
+			}
+			
+		};
+		knnDStream.foreachRDD(saveResFunc);
+	}
+	
 }
