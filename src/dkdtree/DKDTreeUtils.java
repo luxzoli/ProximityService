@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.spark.api.java.JavaRDD;
@@ -14,7 +15,7 @@ import org.apache.spark.streaming.api.java.JavaPairDStream;
 import kdtree.Point;
 import scala.Tuple2;
 
-public class DKDtreeUtils {
+public class DKDTreeUtils {
 
 	public static JavaRDD<Point> pointFromString(JavaRDD<String> pointStrings) {
 		@SuppressWarnings("serial")
@@ -60,23 +61,42 @@ public class DKDtreeUtils {
 
 		return pointsStream;
 	}
-
-	public static void saveResLocal(String outPath, List<String> lines) {
-		File f = new File(outPath, "out.txt");
+	
+	
+	public static void saveResLocal(String outPath, List<Point> points) {
+		File f = new File(outPath);
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
-			for (String line : lines) {
-				bw.write(line + "\n");
+		} 
+		try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(f,true)))) {
+			for (Point p : points) {
+				p.setReady(false);
+				pw.println(p);
+				p.setReady(true);
 			}
-			bw.flush();
+			pw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public static void saveKNNResLocal(final String path, JavaDStream<Point> knnDStream) {
+		@SuppressWarnings("serial")
+		Function<JavaRDD<Point>, Void> saveResFunc = new Function<JavaRDD<Point>, Void>(){
+
+			@Override
+			public Void call(JavaRDD<Point> v1) throws Exception {
+				DKDTreeUtils.saveResLocal(path, v1.collect());
+				return null;
+			}
+			
+		};
+		knnDStream.foreachRDD(saveResFunc);
+	}
+	
 }

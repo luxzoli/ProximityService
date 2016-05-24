@@ -11,7 +11,7 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 import dkdtree.DKDTree;
-import dkdtree.DKDtreeUtils;
+import dkdtree.DKDTreeUtils;
 
 public class StreamingDriver {
 
@@ -32,15 +32,16 @@ public class StreamingDriver {
 		JavaDStream<String> inputStream = ssc.socketTextStream(host, 13000);
 
 		JavaRDD<String> pointStrings = sc.textFile(inPath);
-		JavaRDD<Point> points = DKDtreeUtils.pointFromString(pointStrings);
+		JavaRDD<Point> points = DKDTreeUtils.pointFromString(pointStrings);
 
 		// This version should be used when possible, it is much faster
-		JavaDStream<Point> pointsStream = DKDtreeUtils.pointFromStringStream(
+		JavaDStream<Point> pointsStream = DKDTreeUtils.pointFromStringStream(
 				inputStream).persist(StorageLevel.MEMORY_ONLY());
 		JavaDStream<Point> ekNNDStream = DKDTree
 				.streamEpsilonNeighborhoodKNNQuery(pointsStream, points, k,
 						0.015f, numPartitions, sampleSize);
 
+		//DKDTreeUtils.saveKNNResLocal("nres.txt", ekNNDStream);
 		ekNNDStream.count().print();
 
 		JavaDStream<Point> kNNDStream = DKDTree.streamKNNQuery(pointsStream,
@@ -48,7 +49,7 @@ public class StreamingDriver {
 
 		kNNDStream.count().print();
 		ssc.start();
-		ssc.awaitTerminationOrTimeout(180000);
+		ssc.awaitTerminationOrTimeout(60000);
 		ssc.stop();
 		sc.stop();
 		ssc.close();

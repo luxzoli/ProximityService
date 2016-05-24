@@ -7,7 +7,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import dkdtree.DKDTree;
-import dkdtree.DKDtreeUtils;
+import dkdtree.DKDTreeUtils;
 
 public class BatchDriver {
 
@@ -24,7 +24,7 @@ public class BatchDriver {
 		int numPartitions = Integer.parseInt(args[4]);
 		JavaSparkContext sc = new JavaSparkContext(sparkConf);
 		JavaRDD<String> pointStrings = sc.textFile(inPath);
-		JavaRDD<Point> points = DKDtreeUtils.pointFromString(pointStrings);
+		JavaRDD<Point> points = DKDTreeUtils.pointFromString(pointStrings);
 
 		JavaRDD<Point> ekNNRes = DKDTree.epsilonNeighborhoodKNNQuery(points, points, k, epsilon, numPartitions,
 				sampleSize);
