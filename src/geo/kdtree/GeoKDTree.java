@@ -366,8 +366,9 @@ public class GeoKDTree implements Serializable {
 		}
 		ArrayList<GeoPoint> nodesInRange = new ArrayList<GeoPoint>();
 		rangeSearch(node, lowerBoundary, upperBoundary, nodesInRange);
+		float epsilonDistance = (float) ((epsilon / 180.f) * R * (2 * Math.PI));
 		for (GeoPoint o : nodesInRange) {
-			if (GeoPoint.approximateDistance(p, o) <= epsilon) {
+			if (GeoPoint.approximateDistance(p, o) <= epsilonDistance) {
 				neighbors.add(o);
 			}
 		}
@@ -392,7 +393,7 @@ public class GeoKDTree implements Serializable {
 		PriorityQueue<GeoPointEntry> pq = new PriorityQueue<GeoPointEntry>(k,
 				new GeoPointEntryComparator());
 		kDistance = kNNQuery(node, p, k, kDistance, pq, 0);
-		float epsilonDistance = epsilon * R;
+		float epsilonDistance = (float) ((epsilon / 180.f) * R * (2 * Math.PI));
 		for (GeoPointEntry pe : pq) {
 			GeoPoint point = pe.getPoint();
 			if (p.approximateDistance(point) <= epsilonDistance) {
@@ -473,10 +474,9 @@ public class GeoKDTree implements Serializable {
 		} else {
 			pLevCoord = p.getLon();
 		}
-		// TODO: ellenoriz distance, kivenni a fölös számítást, fölös objektum létrehozásának kivétele???!!!
+		// TODO: ellenoriz distance
 		float splitCoord = node.left.upperBoundary[level];
-		float distanceToSplit = (float) Math
-				.abs/*sqrt*/(((pLevCoord - splitCoord) /* * (pLevCoord - splitCoord) */)) / level==0?180.f:360.f * R;
+		float distanceToSplit;
 		GeoPoint q;
 		GeoPoint r;
 		switch (level % 2) {
@@ -486,6 +486,12 @@ public class GeoKDTree implements Serializable {
 			distanceToSplit = GeoPoint.approximateDistance(r, q);
 			break;
 		case 1:
+			q = new GeoPoint(splitCoord, 0);
+			r = new GeoPoint(pLevCoord, 0);
+			distanceToSplit = GeoPoint.approximateDistance(r, q);
+			break;
+		//This will never happen but it is necessary for the compiler	
+		default:
 			q = new GeoPoint(splitCoord, 0);
 			r = new GeoPoint(pLevCoord, 0);
 			distanceToSplit = GeoPoint.approximateDistance(r, q);
@@ -559,8 +565,27 @@ public class GeoKDTree implements Serializable {
 			pLevCoord = p.getLon();
 		}
 		float splitCoord = node.left.upperBoundary[level];
-		float distanceToSplit = (float) Math
-				.sqrt(((pLevCoord - splitCoord) * (pLevCoord - splitCoord)));
+		float distanceToSplit;
+		GeoPoint q;
+		GeoPoint r;
+		switch (level % 2) {
+		case 0:
+			q = new GeoPoint(0, splitCoord);
+			r = new GeoPoint(0, pLevCoord);
+			distanceToSplit = GeoPoint.approximateDistance(r, q);
+			break;
+		case 1:
+			q = new GeoPoint(splitCoord, 0);
+			r = new GeoPoint(pLevCoord, 0);
+			distanceToSplit = GeoPoint.approximateDistance(r, q);
+			break;
+		//This will never happen	
+		default:
+			q = new GeoPoint(splitCoord, 0);
+			r = new GeoPoint(pLevCoord, 0);
+			distanceToSplit = GeoPoint.approximateDistance(r, q);
+			break;
+		}
 		boolean leftCloser = pLevCoord <= splitCoord ? true : false;
 		if (leftCloser) {
 			kDistance = kNNQuery(node.left, p, k, kDistance, kNearestNeighbors,
