@@ -6,3 +6,5 @@
 
 *.class
 .settings/
+clusters3mID.txt
+res.txt

@@ -35,7 +35,7 @@ public class ProximityDriver {
 		JavaDStream<GeoPoint> pointsStream = ProximityUtils.pointFromStringStream(inputStream).persist(StorageLevel.MEMORY_ONLY());
 
 		JavaDStream<GeoPoint> knnDStream = ProximityService.queryNearby(pointsStream, points, k, epsilon, numPartitions, sampleSize);
-		//ProximityUtils.saveKNNRes(knnDStream);
+		ProximityUtils.saveKNNResLocal("res.txt",knnDStream);
 		knnDStream.count().print();
 		ssc.start();
 		ssc.awaitTerminationOrTimeout(120000);

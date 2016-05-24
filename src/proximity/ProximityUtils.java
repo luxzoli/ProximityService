@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.spark.api.java.JavaRDD;
@@ -84,34 +85,34 @@ public class ProximityUtils {
 	}
 	
 	public static void saveResLocal(String outPath, List<GeoPoint> points) {
-		File f = new File(outPath, "out.txt");
+		File f = new File(outPath);
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
+		} 
+		try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(f,true)))) {
 			for (GeoPoint p : points) {
 				p.setReady(false);
-				bw.write(p.toString() + "\n");
+				pw.println(p);
 				p.setReady(true);
 			}
-			bw.flush();
+			pw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static void saveKNNRes(JavaDStream<GeoPoint> knnDStream) {
+	public static void saveKNNResLocal(final String path, JavaDStream<GeoPoint> knnDStream) {
 		@SuppressWarnings("serial")
 		Function<JavaRDD<GeoPoint>, Void> saveResFunc = new Function<JavaRDD<GeoPoint>, Void>(){
 
 			@Override
 			public Void call(JavaRDD<GeoPoint> v1) throws Exception {
-				ProximityUtils.saveResLocal("res.txt", v1.collect());
+				ProximityUtils.saveResLocal(path, v1.collect());
 				return null;
 			}
 			
